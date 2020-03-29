@@ -11,6 +11,39 @@ import sys
 from optparse import OptionParser
 
 
+op_map = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+    ast.Mod: operator.mod,
+    ast.Pow: operator.pow,
+    ast.LShift: operator.lshift,
+    ast.RShift: operator.rshift,
+    ast.BitOr: operator.or_,
+    ast.BitAnd: operator.and_,
+    ast.BitXor: operator.xor,
+}
+
+func_map = {
+    "log": math.log,
+    "exp": math.exp,
+    "sqrt": math.sqrt,
+    "sin": math.sin,
+    "cos": math.cos,
+    "tan": math.tan,
+    "log2": math.log2,
+    "log10": math.log10,
+    "log": math.log,
+    "erf": math.erf,
+}
+
+const_map = {
+    "pi": math.pi,
+    "e": math.e,
+}
+
 def evaluate(node):
     """
     Walk recursively though the mathematical expression,
@@ -20,34 +53,6 @@ def evaluate(node):
     Valid functions are listed in func_map.
     Valid constants are listed in const_map.
     """
-
-    op_map = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.FloorDiv: operator.floordiv,
-        ast.Mod: operator.mod,
-        ast.Pow: operator.pow,
-        ast.LShift: operator.lshift,
-        ast.RShift: operator.rshift,
-        ast.BitOr: operator.or_,
-        ast.BitAnd: operator.and_,
-        ast.BitXor: operator.xor,
-    }
-
-    func_map = {
-        "log": math.log,
-        "exp": math.exp,
-        "sqrt": math.sqrt,
-        "sin": math.sin,
-        "cos": math.cos,
-    }
-
-    const_map = {
-        "pi": math.pi,
-        "e": math.e,
-    }
 
     if isinstance(node, (list, tuple)):
         return [evaluate(sub_node) for sub_node in node]
@@ -97,26 +102,39 @@ def evaluate(node):
 
     raise TypeError("Unsupported operation: %s" % node.__class__.__name__)
 
+def help():
+    print("Allowed fucntions are")
+    for func in func_map.keys():
+        print("\t" + func)
+
+    print()
+    print("Allowed operations are")
+    for op in op_map.keys():
+        print("\t" + str(op))
 
 def interactive():
     """
     Evaluates expressions given by user in interactive fashion
     """
 
-    print "Please specify expressions to evaluate"
-    print "To exit please enter: empty line or word 'quit'"
-    print ""
+    print ("Please specify expressions to evaluate")
+    print ("To exit please enter: empty line or word 'quit'")
+    print ("To get help please enter: 'h' or 'help'")
+    print ("")
 
     while True:
-        expression = raw_input(">>> ")
+        expression = input(">>> ")
         if expression in ["", "quit"]:
-            print "Bye"
+            print( "Bye" )
             break
+        elif expression in ["h", "help"]:
+            help()
+            continue
 
         try:
-            print evaluate(expression)
-        except StandardError, err:
-            print "Your expression could not be evaluated:", err
+            print( evaluate(expression) )
+        except Exception as err:
+            print( "Your expression could not be evaluated:", err )
 
 
 def from_file(filename):
@@ -129,9 +147,9 @@ def from_file(filename):
     for line in input_file:
         expression = line.strip()
         try:
-            print "%s = %s" % (expression, evaluate(expression))
-        except StandardError, err:
-            print "%s could not be evaluated: %s" % (expression, err)
+            print( "%s = %s" % (expression, evaluate(expression)) )
+        except Exception as err:
+            print( "%s could not be evaluated: %s" % (expression, err) )
 
 
 def main(argv):
@@ -150,17 +168,17 @@ def main(argv):
     if len(args) == 2:
         # Evaluate expression from argument
         try:
-            print evaluate(args[1])
-        except StandardError, err:
-            print "Your expression could not be evaluated:", err
+            print (evaluate(args[1]))
+        except Exception as err:
+            print ("Your expression could not be evaluated:", err)
             sys.exit(1)
 
     elif options.filename:
         # Evaluate expressions in batch mode
         try:
             from_file(options.filename)
-        except IOError, err:
-            print "There was a problem with your file:", err
+        except IOError as err:
+            print ("There was a problem with your file:", err)
             sys.exit(1)
 
     else:
