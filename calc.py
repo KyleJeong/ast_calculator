@@ -27,6 +27,10 @@ op_map = {
 }
 
 func_map = {
+    "ceil": math.ceil,
+    "floor": math.floor,
+    "trunc": math.trunc,
+    "gcd": math.gcd,
     "log": math.log,
     "exp": math.exp,
     "sqrt": math.sqrt,
@@ -37,6 +41,8 @@ func_map = {
     "log10": math.log10,
     "log": math.log,
     "erf": math.erf,
+    "erfc": math.erfc,
+    "bin": bin,
 }
 
 const_map = {
